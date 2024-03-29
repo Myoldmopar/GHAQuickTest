@@ -58,9 +58,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: energyplus
+          path: package
+
+      - name: List Contents
+        run: ls package/
+
+      # - name: Extract Package
 
       - name: Run Package Tests
-        run: ls
+        working-directory: package
+        run: ./a.out
 
 #      - name: Upload to release
 #        uses: svenstaro/upload-release-action@v2
