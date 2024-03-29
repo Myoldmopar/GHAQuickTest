@@ -1,0 +1,69 @@
+name: Tester
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build_installer_artifact:
+    name: Build Installer and Upload as Artifact
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ env.Python_REQUIRED_VERSION }}
+      uses: actions/setup-python@v4
+      id: setup-python
+      with:
+        python-version: 3.10
+
+    - name: -Build- Package
+      working-directory: ./build
+      shell: bash
+      run: ./a.out
+
+    - name: Upload as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: energyplus
+        path: build/a.out
+
+  test_package_and_release:
+    name: Test Built Package and Upload to Release
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Needed permission to upload the release asset
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ env.Python_REQUIRED_VERSION }}
+        uses: actions/setup-python@v4
+        id: setup-python
+        with:
+          python-version: 3.10
+
+      - name: Gather Test Package from Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: energyplus
+
+      - name: Run Package Tests
+        run: ls
+
+#      - name: Upload to release
+#        uses: svenstaro/upload-release-action@v2
+#        with:
+#          repo_token: ${{ secrets.GITHUB_TOKEN }}
+#          file: build/EnergyPlus-*-Windows-x86_64.zip
+#          tag: ${{ github.ref }}
