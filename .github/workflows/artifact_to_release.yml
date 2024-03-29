@@ -67,7 +67,7 @@ jobs:
 
       - name: Run Package Tests
         working-directory: package
-        run: chmod a.out && ./a.out
+        run: chmod +x a.out && ./a.out
 
       - name: Upload to release
         uses: svenstaro/upload-release-action@v2
